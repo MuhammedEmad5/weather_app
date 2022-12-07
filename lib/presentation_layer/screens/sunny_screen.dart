@@ -59,7 +59,7 @@ class SunnyScreen extends StatelessWidget {
                 opacity: AlwaysStoppedAnimation(.8),
               ),
               const Spacer(),
-              analogClock()
+              analogClock(cubit)
             ],
           ),
         ),
@@ -67,7 +67,7 @@ class SunnyScreen extends StatelessWidget {
     );
   }
 
-  Widget analogClock() {
+  Widget analogClock(WeatherCubit cubit) {
     return AnalogClock(
       decoration: BoxDecoration(
           border: Border.all(width: 3.0, color: AppColors.withe),
@@ -85,7 +85,7 @@ class SunnyScreen extends StatelessWidget {
       textScaleFactor: 1.4,
       showTicks: true,
       showDigitalClock: false,
-      datetime: DateTime.now(),
+      datetime: DateTime.now().toUtc().add(Duration(seconds: cubit.weatherModel!.timezone!)),
     );
   }
 

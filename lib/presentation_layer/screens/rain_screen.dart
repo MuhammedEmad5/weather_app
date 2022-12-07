@@ -58,7 +58,7 @@ class RainScreen extends StatelessWidget {
                 opacity: AlwaysStoppedAnimation(.8),
               ),
               const Spacer(),
-              analogClock()
+              analogClock(cubit)
             ],
           ),
         ),
@@ -66,25 +66,25 @@ class RainScreen extends StatelessWidget {
     );
   }
 
-  Widget analogClock() {
+  Widget analogClock(WeatherCubit cubit) {
     return AnalogClock(
-      decoration: BoxDecoration(
-          border: Border.all(width: 3.0, color: AppColors.withe),
-          color: Colors.transparent,
-          shape: BoxShape.circle),
-      width: 150.0,
-      isLive: true,
-      hourHandColor: Colors.black,
-      minuteHandColor: Colors.black45,
-      secondHandColor: Colors.black26,
-      showSecondHand: true,
-      numberColor: Colors.white,
-      showNumbers: true,
-      showAllNumbers: true,
-      textScaleFactor: 1.4,
-      showTicks: true,
-      showDigitalClock: false,
-      datetime: DateTime.now(),
+        decoration: BoxDecoration(
+            border: Border.all(width: 3.0, color: AppColors.withe),
+            color: Colors.transparent,
+            shape: BoxShape.circle),
+        width: 150.0,
+        isLive: true,
+        hourHandColor: Colors.black,
+        minuteHandColor: Colors.black45,
+        secondHandColor: Colors.black26,
+        showSecondHand: true,
+        numberColor: Colors.white,
+        showNumbers: true,
+        showAllNumbers: true,
+        textScaleFactor: 1.4,
+        showTicks: true,
+        showDigitalClock: false,
+        datetime: DateTime.now().toUtc().add(Duration(seconds: cubit.weatherModel!.timezone!),)
     );
   }
 

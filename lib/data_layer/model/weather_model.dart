@@ -18,7 +18,7 @@ class WeatherModel {
       this.id,
       this.countryName,
       this.snow,
-      this.rain});
+      this.rain,});
 
   WeatherModel.fromJson(Map<String, dynamic> json) {
     if (json['weather'] != null) {
