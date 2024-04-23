@@ -58,6 +58,7 @@ class WeatherCubit extends Cubit<WeatherStates>{
   Future<void> getWeatherData(double lat,double lon)async {
     await weatherRepository.getWeatherData(lat, lon).then((value) {
       weatherModel=value;
+      print(weatherModel!.countryName);
       emit(GetWeatherDataSuccessState(weatherModel!));
       return value;
     });
