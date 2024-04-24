@@ -8,15 +8,15 @@ class WeatherRepository{
   WeatherRepository(this.weatherDio);
 
 
- Future<WeatherModel>getWeatherData(double lat,double lon)async{
-   try{
-     final weather=await weatherDio.getWeatherData(lat, lon);
-
+ Future<WeatherModel> getWeatherData(double lat, double lon) async {
+   try {
+     final weather = await weatherDio.getWeatherData(lat, lon);
      return WeatherModel.fromJson(weather);
-   }catch(e){
-     print('the error is ${e.toString()}');
-     return WeatherModel();
+   } catch (e) {
+     print('Error fetching weather data: $e');
+     throw e; // Throw the exception for proper handling
    }
  }
+
 
 }

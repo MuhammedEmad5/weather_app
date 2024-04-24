@@ -16,40 +16,54 @@ class WeatherCubit extends Cubit<WeatherStates>{
 
 
 
-  Future<void>openGps()async{
-    Location gps = Location();
-    bool isOn = await gps.serviceEnabled();
-    if (!isOn) {
-      await gps.requestService();
+  Future<void> openGps() async {
+    try {
+      Location gps = Location();
+      bool isOn = await gps.serviceEnabled();
+      if (!isOn) {
+        await gps.requestService();
+        emit(OpenGpsSuccessState());
+      }
+    } catch (e) {
+      print('Error enabling GPS: $e');
+      emit(OpenGpsErrorState());
     }
   }
 
-  Position? position;
+
   Future<Position> getLocationLatAndLon() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        throw Exception('Location services are disabled.');
 
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
       }
-    }
 
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
 
-   return await Geolocator.getCurrentPosition().then((value) {
-      position=value;
+          throw Exception('Location permissions are denied.');
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        throw Exception(
+            'Location permissions are permanently denied, we cannot request permissions.');
+      }
+
+      Position position = await Geolocator.getCurrentPosition();
       print(position);
-      return value;
-    });
+      emit(GetLocationSuccessState());
+      return position;
+
+    } catch (e) {
+      print('Error getting location: $e');
+      emit(GetLocationErrorState());
+      throw e;
+
+    }
   }
 
 
@@ -60,18 +74,24 @@ class WeatherCubit extends Cubit<WeatherStates>{
       weatherModel=value;
       print(weatherModel!.countryName);
       emit(GetWeatherDataSuccessState(weatherModel!));
-      return value;
+    }
+    ).catchError((error){
+      print(error.toString());
+      emit(GetWeatherDataErrorState(error.toString()));
     });
   }
 
 
-    Future<void>getAllData()async {
-    openGps().then((value) {
-      getLocationLatAndLon().then((value) {
-        getWeatherData(value.latitude, value.longitude);
-      });
-    });
+  Future<void> getAllData() async {
+    try {
+      await openGps();
+      Position position = await getLocationLatAndLon();
+      await getWeatherData(position.latitude, position.longitude);
+    } catch (e) {
+      print('Error fetching all data: $e');
+    }
   }
+
 
 
 
